@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
+import net.bytebuddy.implementation.bytecode.Throw;
 
 import java.util.List;
 
@@ -89,10 +90,10 @@ public class TravelResource {
         return travelService.findCheapestFlightForDestination(destination);
     }
 
-    @GET
-    @Path("flights/between/{min}/{max}")
-    public Response getFlightsInPriceRangeForDestination(@QueryParam("dest") @Size(min = 3, max = 3) String destination,
-                                                         @PathParam("min") Double minVal, @PathParam("max") Double maxVal) {
+//    @GET
+//    @Path("flights/between/{min}/{max}")
+//    public Response getFlightsInPriceRangeForDestination(@QueryParam("dest") String destination,
+//                                                         @PathParam("min") Double minVal, @PathParam("max") Double maxVal) {
 
 //        if (destination.length() > 3) {
 //            return Response.serverError()
@@ -107,11 +108,43 @@ public class TravelResource {
 //                    .type(MediaType.APPLICATION_JSON)
 //                    .build();
 //        }
-        List<Flight> flights = travelService.findFlightsForPriceRange(destination, minVal, maxVal);
-        return Response.status(Response.Status.OK)
-                .entity(flights)
-                .type(MediaType.APPLICATION_JSON)
-                .build();
+//    }
+
+//    @GET
+//    @Path("flights/between/{min}/{max}")
+//    public Response getFlightsInPriceRangeForDestination(@QueryParam("dest") @Size(min = 3, max = 3) String destination,
+//                                                         @PathParam("min") Double minVal, @PathParam("max") Double maxVal) {
+//
+//        List<Flight> flights = travelService.findFlightsForPriceRange(destination, minVal, maxVal);
+//        return Response.status(Response.Status.OK)
+//                .entity(flights)
+//                .type(MediaType.APPLICATION_JSON)
+//                .build();
+//    }
+
+    /**
+     *  Exception handling by throwing WebApplicationException, without having to define an Exception Mapper.
+     * @param destination
+     * @param minVal
+     * @param maxVal
+     * @return
+     */
+    @GET
+    @Path("flights/between/{min}/{max}")
+    public Response getFlightsInPriceRangeForDestination(@QueryParam("dest") String destination,
+                                                         @PathParam("min") Double minVal, @PathParam("max") Double maxVal) {
+
+        if (destination.length() != 3) {
+            throw new WebApplicationException(Response.serverError().status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid destination. Please supply a valid IATA code")
+                    .build());
+        } else {
+            List<Flight> flights = travelService.findFlightsForPriceRange(destination, minVal, maxVal);
+            return Response.status(Response.Status.OK)
+                    .entity(flights)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
     }
 
     @POST
