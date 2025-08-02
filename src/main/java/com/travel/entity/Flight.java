@@ -1,6 +1,7 @@
 package com.travel.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serializable;
@@ -18,6 +19,8 @@ public class Flight implements Serializable {
 
     private String airline;
     private String origin;
+
+    @NotEmpty
     private String destination;
 
     @Temporal(TemporalType.DATE)

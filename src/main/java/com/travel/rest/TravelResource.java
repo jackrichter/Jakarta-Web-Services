@@ -8,6 +8,9 @@ import com.travel.entity.Flight;
 import com.travel.entity.Hotel;
 import com.travel.service.TravelService;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
@@ -61,7 +64,7 @@ public class TravelResource {
     @GET
     @Path("airline")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Flight> getFlightsByAirline(@QueryParam("al") String airline) {
+    public List<Flight> getFlightsByAirline(@QueryParam("al") @NotEmpty String airline) {
         return travelService.findFlightsByAirline(airline);
     }
 
@@ -88,28 +91,33 @@ public class TravelResource {
 
     @GET
     @Path("flights/between/{min}/{max}")
-    public Response getFlightsInPriceRangeForDestination(@QueryParam("dest") String destination,
+    public Response getFlightsInPriceRangeForDestination(@QueryParam("dest") @Size(min = 3, max = 3) String destination,
                                                          @PathParam("min") Double minVal, @PathParam("max") Double maxVal) {
 
-        if (destination.length() > 3) {
-            return Response.serverError()
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity("Invalid destination. Please supply a valid IATA code")
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
-        } else {
-            List<Flight> flights = travelService.findFlightsForPriceRange(destination, minVal, maxVal);
-            return Response.status(Response.Status.OK)
-                    .entity(flights)
-                    .type(MediaType.APPLICATION_JSON)
-                    .build();
-        }
+//        if (destination.length() > 3) {
+//            return Response.serverError()
+//                    .status(Response.Status.BAD_REQUEST)
+//                    .entity("Invalid destination. Please supply a valid IATA code")
+//                    .type(MediaType.TEXT_PLAIN)
+//                    .build();
+//        } else {
+//            List<Flight> flights = travelService.findFlightsForPriceRange(destination, minVal, maxVal);
+//            return Response.status(Response.Status.OK)
+//                    .entity(flights)
+//                    .type(MediaType.APPLICATION_JSON)
+//                    .build();
+//        }
+        List<Flight> flights = travelService.findFlightsForPriceRange(destination, minVal, maxVal);
+        return Response.status(Response.Status.OK)
+                .entity(flights)
+                .type(MediaType.APPLICATION_JSON)
+                .build();
     }
 
     @POST
     @Path("flight/create")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createFlight(Flight flight) {
+    public Response createFlight(@Valid Flight flight) {
         travelService.createFlight(flight);
         return Response.status(Response.Status.CREATED).build();
     }
