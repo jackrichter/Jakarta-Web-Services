@@ -1,4 +1,4 @@
-package com.travel.service;
+package com.travel.security;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.security.enterprise.credential.Credential;
