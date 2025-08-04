@@ -7,6 +7,7 @@ package com.travel.rest;
 import com.travel.entity.Flight;
 import com.travel.entity.Hotel;
 import com.travel.service.TravelService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -38,6 +39,7 @@ public class TravelResource {
     @GET
     @Path("flights")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("USER")
     public List<Flight> findAllFlights() {
         return travelService.findAll();
     }
@@ -150,6 +152,7 @@ public class TravelResource {
     @POST
     @Path("flight/create")
     @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed("AIRLINE")
     public Response createFlight(@Valid Flight flight) {
         travelService.createFlight(flight);
         return Response.status(Response.Status.CREATED).build();
@@ -173,6 +176,7 @@ public class TravelResource {
     @POST
     @Path("hotel/create")
     @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed("HOTEL")
     public Response createHotel(Hotel hotel) {
         travelService.createHotel(hotel);
         return Response.status(Response.Status.CREATED).build();
